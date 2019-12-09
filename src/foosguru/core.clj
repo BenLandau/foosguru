@@ -1,8 +1,13 @@
 (ns foosguru.core
+  (:require [org.httpkit.server :as s]
+            [clojure.pprint     :as p]
+            [compojure.core     :refer :all]
+            [compojure.route    :refer :all]
+            [clojure.java.jdbc  :as j])
   (:gen-class))
+(use '[ring.middleware.json :only [wrap-json-body wrap-json-response]]
+     '[ring.util.response   :only [response]])
 
-(require '[clojure.pprint    :as p]
-         '[clojure.java.jdbc :as j])
 
 (declare
   insert-score-interactive
@@ -90,7 +95,8 @@
       0 
       old)))
 
-(defn -main
+
+(defn mainfn
   []
   (do 
     (def state [])
@@ -104,5 +110,19 @@
               (insert-singles-record date red-name red-score blue-name blue-score))
             ("Incorrect format")))))))
 
+(defroutes app
+  (POST "/score" req
+    ;;(str (:p1 req) " " (:p2 req) " " (:s1 req) " " (:s2 req)))
+    (response 
+      (interleave 
+        (map 
+          #(get-in 
+             (:body req) [%]) 
+             [:p1 :p2 :s1 :s2])
+        (repeat " ")))) 
+  (GET "/" [] (str "Hello World")))
 
 
+(defn -main [& args]
+  (s/run-server (wrap-json-body app {:keywords? true}) {:port 8080})
+  (println "Server started on port 8080"))

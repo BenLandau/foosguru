@@ -5,7 +5,9 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure     "1.10.0"]
                  [org.clojure/java.jdbc   "0.7.5"]
-                 [http-kit                "2.2.0"]
+                 [http-kit                "2.3.0-beta2"]
+                 [ring/ring-json          "0.5.0"]
+                 [compojure               "1.6.1"]
                  [org.xerial/sqlite-jdbc  "3.7.2"]]
   :main ^:skip-aot foosguru.core
   :target-path "target/%s"

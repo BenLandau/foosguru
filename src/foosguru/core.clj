@@ -113,11 +113,13 @@
 (defroutes app
   (POST "/score" req
     ;;(str (:p1 req) " " (:p2 req) " " (:s1 req) " " (:s2 req)))
-    (response 
-      (interleave 
+    (let [{:keys [p1 s1 p2 s2]} (:body req)]
+      (insert-singles-record p1 s1 p2 s2))
+    (response
+      (interleave
         (map 
-          #(get-in 
-             (:body req) [%]) 
+          #(get 
+             (:body req) %) 
              [:p1 :p2 :s1 :s2])
         (repeat " ")))) 
   (GET "/" [] (str "Hello World")))

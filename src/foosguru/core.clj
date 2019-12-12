@@ -96,19 +96,30 @@
       old)))
 
 
+(defn has-date? [input]
+  (cond 
+    (contains? input :date) :datey
+    :else                   :notdatey))
+
+(defmulti insert-record has-date?)
+
+(defmethod insert-record :datey [{:keys [date red-name red-score blue-name blue-score]}]
+  (insert-singles-record date red-name red-score blue-name blue-score))
+
+(defmethod insert-record :notdatey [{:keys [red-name red-score blue-name blue-score]}]
+  (insert-singles-record red-name red-score blue-name blue-score))
+
+
+
 (defn mainfn
   []
   (do 
     (def state [])
     (while (empty? []) 
       (let [x (digest-score-interactive)]
-        (if (= (count x) 4)
-          (let [{:keys [red-name red-score blue-name blue-score]} x]
-            (insert-singles-record red-name red-score blue-name blue-score))
-          (if (= (count x) 5)
-            (let [{:keys [date red-name red-score blue-name blue-score]} x]
-              (insert-singles-record date red-name red-score blue-name blue-score))
-            ("Incorrect format")))))))
+        (insert-record x)))))
+
+
 
 (defroutes app
   (POST "/score" req
